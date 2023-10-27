@@ -1,8 +1,8 @@
 public class LineSegment {
-    public Coordinate start;
-    public Coordinate end;
+    public Point start;
+    public Point end;
 
-    public LineSegment(Coordinate start, Coordinate end) {
+    public LineSegment(Point start, Point end) {
         this.start = start;
         this.end = end;
     }

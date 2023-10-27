@@ -9,14 +9,14 @@ public class OldMain {
     class PlaneSweepMaxDistance {
 
         public static double maxDistanceUsingPlaneSweep(double[] A, double[] B) {
-            ArrayList<Coordinate> listA = convertToCoordinates(A);
-            ArrayList<Coordinate> listB = convertToCoordinates(B);
+            ArrayList<Point> listA = convertToCoordinates(A);
+            ArrayList<Point> listB = convertToCoordinates(B);
 
             List<Double> allXCoordinates = new ArrayList<>();
-            for (Coordinate c : listA) {
+            for (Point c : listA) {
                 allXCoordinates.add(c.longitude);
             }
-            for (Coordinate c : listB) {
+            for (Point c : listB) {
                 allXCoordinates.add(c.longitude);
             }
             Collections.sort(allXCoordinates);
@@ -26,20 +26,20 @@ public class OldMain {
             double maxDistance = Double.MIN_VALUE;
 
             for (double x : allXCoordinates) {
-                ArrayList<Coordinate> candidates = new ArrayList<>();
+                ArrayList<Point> candidates = new ArrayList<>();
 
-                for (Coordinate c : listA) {
+                for (Point c : listA) {
                     if (c.longitude == x) {
                         candidates.add(c);
                     }
                 }
-                for (Coordinate c : listB) {
+                for (Point c : listB) {
                     if (c.longitude == x) {
                         candidates.add(c);
                     }
                 }
 
-                for (Coordinate c : candidates) {
+                for (Point c : candidates) {
                     if (activeYCoordinates.isEmpty()) {
                         activeYCoordinates.put(c.latitude, c.latitude);
                         continue;
@@ -400,16 +400,16 @@ public class OldMain {
             return Math.pow(((lat1-lat2)*111139),2) + Math.pow(((lon1 - lon2)*111139),2);
         }
 
-        public static ArrayList<Coordinate> convertToCoordinates(double[] list) {
-            ArrayList<Coordinate> l = new ArrayList<>();
+        public static ArrayList<Point> convertToCoordinates(double[] list) {
+            ArrayList<Point> l = new ArrayList<>();
             for(int i = 0; i < list.length-1; i+=2) {
-                Coordinate c = new Coordinate(list[i], list[i+1]);
+                Point c = new Point(list[i], list[i+1]);
                 l.add(c);
             }
             return l;
         }
 
-        public static ArrayList<LineSegment> convertToLineSegments(ArrayList<Coordinate> list) {
+        public static ArrayList<LineSegment> convertToLineSegments(ArrayList<Point> list) {
             ArrayList<LineSegment> lineSegments = new ArrayList<>();
 
             for (int i = 0; i < list.size() -1; i += 2) {
@@ -421,14 +421,14 @@ public class OldMain {
 
 
         public static double maxDistanceUsingNearestNeighbor(double[] A, double[] B) {
-            ArrayList<Coordinate> listA = convertToCoordinates(A);
-            ArrayList<Coordinate> listB = convertToCoordinates(B);
+            ArrayList<Point> listA = convertToCoordinates(A);
+            ArrayList<Point> listB = convertToCoordinates(B);
 
             double maxdistance = Double.MIN_VALUE;
 
-            for (Coordinate point1 : listA) {
+            for (Point point1 : listA) {
                 double curr = Double.MAX_VALUE;
-                for (Coordinate point2 : listB) {
+                for (Point point2 : listB) {
                     double distance = distanceLatLngSq(point1.getLatitude(), point2.getLatitude(),point1.getLatitude(), point2.getLongitude() );
                     if (distance < curr) {
                         curr = distance;

@@ -40,6 +40,14 @@ public class Main {
     }
 
     /**
+     * convert line segments to line
+     * return double[] line
+     */
+    public static double[] convertSegmentToLine(LineSegment segment) {
+        return findLine(segment.start, segment.end);
+    }
+
+    /**
      * return the squared distance between two coordinates
      * using latitude and longitude
      * TODO: find the reference of this equation
@@ -111,17 +119,26 @@ public class Main {
             res = new Point(x, x*b[0] + b[1]);
         }
         else {
-            double[] perpendicular = perpendicularLine(A, mainline);
+            double[] perpendicular = perpendicularLine(A, mainline); // the perpendicular line
             for (LineSegment l : testB) {
-                double bound1 = perpendicular[0] * l.start.getLatitude() + perpendicular[1];
-                double bound2 = perpendicular[0] * l.end.getLatitude() + perpendicular[1];
-                double segement_y_start = l.start.getLongitude();
-                double segement_y_end = l.end.getLongitude(); // check if the intersection falls between the range
-                if (Math.max(bound1, bound2) >= Math.max(segement_y_start, segement_y_end) &&
-                        Math.min(bound1, bound2) <= Math.min(segement_y_start, segement_y_end)) {
+                // method 2:
+                double left_bound = l.start.getLatitude();
+                double right_bound = l.end.getLatitude();
+                Point X = findIntersection(perpendicular, convertSegmentToLine(l));
+                // check if the X latitude lies within the bounds
+                if ((X.latitude >= left_bound && X.latitude <= right_bound) || (X.latitude <= left_bound && X.latitude >= right_bound)) {
                     lineb = l;
-                } // TODO: add a new check for y values and x values
-                // what if there's no precondition, keep the larger one
+                }
+
+//                double bound1 = perpendicular[0] * l.start.getLatitude() + perpendicular[1];
+//                double bound2 = perpendicular[0] * l.end.getLatitude() + perpendicular[1];
+//                double segement_y_start = l.start.getLongitude();
+//                double segement_y_end = l.end.getLongitude(); // check if the intersection falls between the range
+//                if (Math.max(bound1, bound2) >= Math.max(segement_y_start, segement_y_end) &&
+//                        Math.min(bound1, bound2) <= Math.min(segement_y_start, segement_y_end)) {
+//                    lineb = l;
+//                } // TODO: add a new check for y values and x values
+//                // what if there's no precondition, keep the larger one
             }
             if (lineb == null) {
                 return null;
@@ -165,11 +182,34 @@ public class Main {
         return meandist/coordinatesA.size();
     }
 
+    /**
+     * return the min distance of all the distances from A endpoints to test B line segments
+     */
+    public static double minDistance(ArrayList<Point> coordinatesA, ArrayList<Point> testB) {
+        double mindist = 99999;
+        ArrayList<LineSegment> linesegmentsB = convertToLineSegments(testB);
+        for (Point a : coordinatesA) {
+            Point b = intersectionLineSegment(a, linesegmentsB);
+            if (b != null) {
+                double temp = distanceLatLngSq(a,b);
+                if (temp < mindist) {
+                    mindist = temp;
+                }
+            }
+        }
+        return Math.sqrt(mindist);
+    }
+
     public static void main(String[] args) {
         mainline = findLine(test8.get(0), test8.get(test8.size()-1));
         // System.out.println(maxDistance(test5, test6));
         System.out.println(maxDistance(test8, test7));
         System.out.println(avgDistance(test8, test7));
+        System.out.println(minDistance(test8, test7));
+
+
+        System.out.println(maxDistance(test7, test8));
+        System.out.println(avgDistance(test7, test8));
         // System.out.println(avgDistance(statuetosuzzallo1, statuetosuzzallo2));
     }
 
